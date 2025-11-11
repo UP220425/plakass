@@ -1,0 +1,21 @@
+<resources>
+    <!-- Colores principales -->
+    <color name="primary_blue">#1976D2</color>        <!-- Azul principal (botones, logo, enlaces) -->
+    <color name="primary_dark_blue">#1156A0</color>   <!-- Azul oscuro -->
+    <color name="accent_teal">#03DAC5</color>         <!-- Color de acento secundario -->
+
+    <!-- Colores de fondo y texto -->
+    <color name="background_light">#F7F7F7</color>    <!-- Fondo gris clarito -->
+    <color name="text_primary">#000000</color>        <!-- Texto negro -->
+    <color name="text_secondary">#808080</color>      <!-- Texto gris -->
+    <color name="text_link">#1976D2</color>           <!-- Azul para links -->
+
+    <!-- Colores de error o advertencia -->
+    <color name="error_red">#D32F2F</color>
+
+
+    <color name="purple_500">#1976D2</color>
+    <color name="purple_700">#1156A0</color>
+    <color name="teal_200">#03DAC5</color>
+
+</resources>

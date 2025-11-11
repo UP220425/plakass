@@ -1,0 +1,21 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="Theme.PlateRecognitionApp" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Colores base -->
+        <item name="colorPrimary">@color/primary_blue</item>
+        <item name="colorPrimaryVariant">@color/primary_dark_blue</item>
+        <item name="colorOnPrimary">@android:color/white</item>
+
+        <!-- Fondo principal -->
+        <item name="android:windowBackground">@color/background_light</item>
+
+        <!-- Estilo general -->
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:statusBarColor">@color/primary_dark_blue</item>
+        <item name="android:navigationBarColor">@color/background_light</item>
+
+        <!-- Activar el modo Material Components -->
+        <item name="materialThemeOverlay">@style/ThemeOverlay.MaterialComponents</item>
+    </style>
+
+</resources>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Screen padding -->
+    <dimen name="screen_padding">16dp</dimen>
+
+    <!-- Margins -->
+    <dimen name="tiny_margin">4dp</dimen>
+    <dimen name="small_margin">8dp</dimen>
+    <dimen name="medium_margin">16dp</dimen>
+    <dimen name="large_margin">24dp</dimen>
+
+    <!-- Text sizes -->
+    <dimen name="text_small">14sp</dimen>
+    <dimen name="text_medium">16sp</dimen>
+    <dimen name="text_large">20sp</dimen>
+
+    <!-- Icon sizes -->
+    <dimen name="icon_size">24dp</dimen>
+    <dimen name="icon_size_large">48dp</dimen>
+    <dimen name="icon_padding">12dp</dimen>
+
+    <!-- Avatar dimensions -->
+    <dimen name="avatar_size">80dp</dimen>
+    <dimen name="avatar_corner_radius">40dp</dimen>
+    <dimen name="avatar_elevation">4dp</dimen>
+    <dimen name="avatar_padding">20dp</dimen>
+
+    <!-- Card dimensions -->
+    <dimen name="card_padding">20dp</dimen>
+    <dimen name="card_inner_padding">12dp</dimen>
+    <dimen name="card_corner_radius">16dp</dimen>
+    <dimen name="card_elevation">2dp</dimen>
+
+    <!-- Button dimensions -->
+    <dimen name="button_height">52dp</dimen>
+    <dimen name="button_corner_radius">12dp</dimen>
+    <dimen name="button_padding_vertical">8dp</dimen>
+    <dimen name="button_padding_horizontal">12dp</dimen>
+
+    <!-- Input dimensions -->
+    <dimen name="input_corner_radius">8dp</dimen>
+
+    <!-- List dimensions -->
+    <dimen name="list_item_height">56dp</dimen>
+</resources>

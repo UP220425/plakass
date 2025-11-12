@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F8FAFF"
+    android:fitsSystemWindows="true"
+    tools:context=".ui.settings.UserSettingsFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/screen_padding">
+
+        <!-- HEADER RESPONSIVE -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/large_margin">
+
+            <ImageView
+                android:id="@+id/ivBack"
+                android:layout_width="@dimen/icon_size_large"
+                android:layout_height="@dimen/icon_size_large"
+                android:src="@drawable/ic_arrow_back"
+                android:tint="#1A237E"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="@dimen/icon_padding"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Configuración de Usuario"
+                android:textSize="@dimen/text_large"
+                android:textStyle="bold"
+                android:textColor="#1A237E"
+                android:gravity="center"
+                app:layout_constraintStart_toEndOf="@id/ivBack"
+                app:layout_constraintEnd_toStartOf="@+id/guideline_end"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline_end"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="331dp" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- TARJETA DE PERFIL RESPONSIVE -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/medium_margin"
+            app:cardCornerRadius="@dimen/card_corner_radius"
+            app:cardElevation="@dimen/card_elevation">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/card_padding">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Información Personal"
+                    android:textSize="@dimen/text_medium"
+                    android:textStyle="bold"
+                    android:textColor="#1A237E"
+                    android:layout_marginBottom="@dimen/medium_margin" />
+
+                <!-- SECCIÓN DE PERFIL RESPONSIVE -->
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/medium_margin">
+
+                    <!-- Avatar -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardAvatar"
+                        android:layout_width="@dimen/avatar_size"
+                        android:layout_height="@dimen/avatar_size"
+                        app:cardCornerRadius="@dimen/avatar_corner_radius"
+                        app:cardElevation="@dimen/avatar_elevation"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent">
+
+                        <ImageView
+                            android:id="@+id/ivProfilePicture"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:src="@drawable/ic_person"
+                            android:scaleType="centerInside"
+                            android:padding="@dimen/avatar_padding"
+                            android:tint="#1A237E"
+                            android:background="@drawable/circle_bg" />
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Información del usuario -->
+                    <LinearLayout
+                        android:id="@+id/layoutUserInfo"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingEnd="@dimen/small_margin"
+                        app:layout_constraintStart_toEndOf="@id/cardAvatar"
+                        app:layout_constraintEnd_toStartOf="@+id/btnChangePhoto"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent">
+
+                        <TextView
+                            android:id="@+id/tvUserName"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Juan Pérez"
+                            android:textSize="@dimen/text_medium"
+                            android:textStyle="bold"
+                            android:textColor="#000000"
+                            android:ellipsize="end"
+                            android:maxLines="1" />
+
+                        <TextView
+                            android:id="@+id/tvUserEmail"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="juan.perez@email.com"
+                            android:textSize="@dimen/text_small"
+                            android:textColor="#666666"
+                            android:layout_marginTop="@dimen/tiny_margin"
+                            android:ellipsize="end"
+                            android:maxLines="2"
+                            android:lineSpacingExtra="2dp" />
+
+                    </LinearLayout>
+
+                    <!-- Botón Cambiar -->
+                    <TextView
+                        android:id="@+id/btnChangePhoto"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Cambiar"
+                        android:textSize="@dimen/text_small"
+                        android:textColor="#1976D2"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:paddingVertical="@dimen/button_padding_vertical"
+                        android:paddingHorizontal="@dimen/button_padding_horizontal"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <!-- FORMULARIO RESPONSIVE -->
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/small_margin"
+                    android:hint="Nombre completo"
+                    app:boxCornerRadiusTopStart="@dimen/input_corner_radius"
+                    app:boxCornerRadiusTopEnd="@dimen/input_corner_radius"
+                    app:boxCornerRadiusBottomStart="@dimen/input_corner_radius"
+                    app:boxCornerRadiusBottomEnd="@dimen/input_corner_radius">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etFullName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPersonName"
+                        android:singleLine="true"
+                        android:text="Juan Pérez" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/small_margin"
+                    android:hint="Correo electrónico"
+                    app:boxCornerRadiusTopStart="@dimen/input_corner_radius"
+                    app:boxCornerRadiusTopEnd="@dimen/input_corner_radius"
+                    app:boxCornerRadiusBottomStart="@dimen/input_corner_radius"
+                    app:boxCornerRadiusBottomEnd="@dimen/input_corner_radius">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textEmailAddress"
+                        android:singleLine="true"
+                        android:text="juan.perez@email.com" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/medium_margin"
+                    android:hint="Teléfono"
+                    app:boxCornerRadiusTopStart="@dimen/input_corner_radius"
+                    app:boxCornerRadiusTopEnd="@dimen/input_corner_radius"
+                    app:boxCornerRadiusBottomStart="@dimen/input_corner_radius"
+                    app:boxCornerRadiusBottomEnd="@dimen/input_corner_radius">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etPhone"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="phone"
+                        android:singleLine="true"
+                        android:text="+52 123 456 7890" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <Button
+                    android:id="@+id/btnSaveProfile"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/button_height"
+                    android:text="Guardar Cambios"
+                    android:textSize="@dimen/text_medium"
+                    android:textStyle="bold"
+                    android:backgroundTint="#1A237E"
+                    android:textColor="#FFFFFF"
+                    android:stateListAnimator="@null"
+                    app:cornerRadius="@dimen/button_corner_radius" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- OPCIONES DE CUENTA RESPONSIVE -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="@dimen/card_corner_radius"
+            app:cardElevation="@dimen/card_elevation">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/card_inner_padding">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Opciones de Cuenta"
+                    android:textSize="@dimen/text_medium"
+                    android:textStyle="bold"
+                    android:textColor="#1A237E"
+                    android:layout_margin="@dimen/small_margin" />
+
+                <!-- CAMBIAR CONTRASEÑA -->
+                <LinearLayout
+                    android:id="@+id/optionChangePassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/list_item_height"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingStart="@dimen/medium_margin"
+                    android:paddingEnd="@dimen/small_margin"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <ImageView
+                        android:layout_width="@dimen/icon_size"
+                        android:layout_height="@dimen/icon_size"
+                        android:src="@drawable/ic_lock"
+                        android:tint="#666666"
+                        android:layout_marginEnd="@dimen/small_margin" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Cambiar contraseña"
+                        android:textSize="@dimen/text_medium"
+                        android:textColor="#000000" />
+
+                    <ImageView
+                        android:layout_width="@dimen/icon_size"
+                        android:layout_height="@dimen/icon_size"
+                        android:src="@drawable/ic_arrow_forward"
+                        android:tint="#666666" />
+
+                </LinearLayout>
+
+                <!-- NOTIFICACIONES -->
+                <LinearLayout
+                    android:id="@+id/optionNotifications"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/list_item_height"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingStart="@dimen/medium_margin"
+                    android:paddingEnd="@dimen/small_margin"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <ImageView
+                        android:layout_width="@dimen/icon_size"
+                        android:layout_height="@dimen/icon_size"
+                        android:src="@drawable/ic_notifications"
+                        android:tint="#666666"
+                        android:layout_marginEnd="@dimen/small_margin" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Notificaciones"
+                        android:textSize="@dimen/text_medium"
+                        android:textColor="#000000" />
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/switchNotifications"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true" />
+
+                </LinearLayout>
+
+                <!-- CERRAR SESIÓN -->
+                <LinearLayout
+                    android:id="@+id/optionLogout"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/list_item_height"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingStart="@dimen/medium_margin"
+                    android:paddingEnd="@dimen/small_margin"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <ImageView
+                        android:layout_width="@dimen/icon_size"
+                        android:layout_height="@dimen/icon_size"
+                        android:src="@drawable/ic_logout"
+                        android:tint="#D32F2F"
+                        android:layout_marginEnd="@dimen/small_margin" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Cerrar sesión"
+                        android:textSize="@dimen/text_medium"
+                        android:textColor="#D32F2F" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+
+</ScrollView>

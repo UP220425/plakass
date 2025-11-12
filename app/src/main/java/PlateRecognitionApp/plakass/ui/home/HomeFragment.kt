@@ -68,14 +68,12 @@ class HomeFragment : Fragment() {
 
         // Card 2 - Historial
         binding.cardHistorial.setOnClickListener {
-            // Navegar al fragmento de historial
-            showMessage("Funcionalidad de historial en desarrollo")
+            findNavController().navigate(R.id.action_homeFragment_to_historyFragment)
         }
 
         // Card 3 - Vehículos
         binding.cardVehiculos.setOnClickListener {
-            // Navegar al fragmento de vehículos
-            showMessage("Funcionalidad de vehículos en desarrollo")
+            findNavController().navigate(R.id.action_homeFragment_to_vehiclesFragment)
         }
 
         // Card 4 - Configuración

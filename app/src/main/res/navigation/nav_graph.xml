@@ -65,6 +65,24 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+
+        <!-- ACCIÓN PARA HISTORIAL -->
+        <action
+            android:id="@+id/action_homeFragment_to_historyFragment"
+            app:destination="@id/historyFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+
+        <!-- NUEVA ACCIÓN PARA VEHÍCULOS -->
+        <action
+            android:id="@+id/action_homeFragment_to_vehiclesFragment"
+            app:destination="@id/vehiclesFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <!-- CONFIGURACIÓN DE USUARIO -->
@@ -129,6 +147,35 @@
             app:destination="@id/homeFragment"
             app:popUpTo="@id/homeFragment"
             app:popUpToInclusive="false" />
+    </fragment>
+
+    <!-- HISTORIAL -->
+    <fragment
+        android:id="@+id/historyFragment"
+        android:name="PlateRecognitionApp.plakass.ui.history.HistoryFragment"
+        android:label="Historial"
+        tools:layout="@layout/fragment_history">
+
+        <action
+            android:id="@+id/action_historyFragment_to_homeFragment"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="false" />
+    </fragment>
+
+    <!-- NUEVO FRAGMENTO DE VEHÍCULOS -->
+    <fragment
+        android:id="@+id/vehiclesFragment"
+        android:name="PlateRecognitionApp.plakass.ui.vehicles.VehiclesFragment"
+        android:label="Mis Vehículos"
+        tools:layout="@layout/fragment_vehicles">
+
+        <action
+            android:id="@+id/action_vehiclesFragment_to_homeFragment"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="false" />
+
     </fragment>
 
 </navigation>

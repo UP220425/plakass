@@ -21,4 +21,13 @@
     <color name="black_semi_transparent">#CC000000</color>
     <color name="scanner_center_bg">#20000000</color>
 
+    <color name="green_light">#E8F5E8</color>
+    <color name="green_dark">#4CAF50</color>
+    <color name="blue_light">#E3F2FD</color>
+    <color name="blue_dark">#2196F3</color>
+    <color name="red_light">#FFEBEE</color>
+    <color name="red_dark">#F44336</color>
+    <color name="button_filter_unselected">#E8EAF6</color>
+    <color name="primary_dark">#1A237E</color>
+
 </resources>

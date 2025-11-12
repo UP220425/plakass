@@ -83,6 +83,10 @@ class HomeFragment : Fragment() {
             // Navegar a configuración (igual que el icono de perfil)
             findNavController().navigate(R.id.action_homeFragment_to_userSettingsFragment)
         }
+
+        binding.cardHistorial.setOnClickListener {
+            findNavController().navigate(R.id.action_homeFragment_to_historyFragment)
+        }
     }
 
     private fun showMessage(message: String) {

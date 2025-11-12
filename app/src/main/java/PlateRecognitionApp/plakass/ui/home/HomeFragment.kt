@@ -63,8 +63,7 @@ class HomeFragment : Fragment() {
         // Configurar los click listeners para las cards del home
         // Card 1 - Escanear Ticket
         binding.cardEscanear.setOnClickListener {
-            // Navegar al fragmento de escaneo
-            showMessage("Funcionalidad de escaneo en desarrollo")
+            findNavController().navigate(R.id.action_homeFragment_to_scannerFragment)
         }
 
         // Card 2 - Historial

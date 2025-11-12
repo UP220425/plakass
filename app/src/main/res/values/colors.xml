@@ -18,4 +18,7 @@
     <color name="purple_700">#1156A0</color>
     <color name="teal_200">#03DAC5</color>
 
+    <color name="black_semi_transparent">#CC000000</color>
+    <color name="scanner_center_bg">#20000000</color>
+
 </resources>

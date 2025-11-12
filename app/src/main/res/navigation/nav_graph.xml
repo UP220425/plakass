@@ -12,7 +12,6 @@
         android:label="Login"
         tools:layout="@layout/fragment_login">
 
-        <!-- Acción para ir al registro -->
         <action
             android:id="@+id/action_loginFragment_to_registerFragment"
             app:destination="@id/registerFragment"
@@ -21,7 +20,6 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
 
-        <!-- Acción para ir al home -->
         <action
             android:id="@+id/action_loginFragment_to_homeFragment"
             app:destination="@id/homeFragment"
@@ -29,7 +27,6 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
-
     </fragment>
 
     <!-- REGISTER -->
@@ -39,13 +36,11 @@
         android:label="Register"
         tools:layout="@layout/fragment_register">
 
-        <!-- Acción para volver al login -->
         <action
             android:id="@+id/action_registerFragment_to_loginFragment"
             app:destination="@id/loginFragment"
             app:popUpTo="@id/loginFragment"
             app:popUpToInclusive="true" />
-
     </fragment>
 
     <!-- HOME -->
@@ -55,7 +50,6 @@
         android:label="Home"
         tools:layout="@layout/fragment_home">
 
-        <!-- Acción para ir a configuración de usuario -->
         <action
             android:id="@+id/action_homeFragment_to_userSettingsFragment"
             app:destination="@id/userSettingsFragment"
@@ -64,6 +58,13 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
 
+        <action
+            android:id="@+id/action_homeFragment_to_scannerFragment"
+            app:destination="@id/scannerFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <!-- CONFIGURACIÓN DE USUARIO -->
@@ -73,20 +74,61 @@
         android:label="Configuración de Usuario"
         tools:layout="@layout/fragment_user_settings">
 
-        <!-- Acción para volver al home -->
         <action
             android:id="@+id/action_userSettingsFragment_to_homeFragment"
             app:destination="@id/homeFragment"
             app:popUpTo="@id/homeFragment"
             app:popUpToInclusive="false" />
 
-        <!-- Acción global para ir al login (cerrar sesión) -->
         <action
             android:id="@+id/action_global_loginFragment"
             app:destination="@id/loginFragment"
             app:popUpTo="@id/nav_graph"
             app:popUpToInclusive="true" />
+    </fragment>
 
+    <!-- ESCÁNER -->
+    <fragment
+        android:id="@+id/scannerFragment"
+        android:name="PlateRecognitionApp.plakass.ui.scanner.ScannerFragment"
+        android:label="Escanear Ticket"
+        tools:layout="@layout/fragment_scanner">
+
+        <action
+            android:id="@+id/action_scannerFragment_to_manualEntryFragment"
+            app:destination="@id/manualEntryFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+
+        <action
+            android:id="@+id/action_scannerFragment_to_homeFragment"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="false" />
+    </fragment>
+
+    <!-- INGRESO MANUAL -->
+    <fragment
+        android:id="@+id/manualEntryFragment"
+        android:name="PlateRecognitionApp.plakass.ui.scanner.ManualEntryFragment"
+        android:label="Ingreso Manual"
+        tools:layout="@layout/fragment_manual_entry">
+
+        <action
+            android:id="@+id/action_manualEntryFragment_to_scannerFragment"
+            app:destination="@id/scannerFragment"
+            app:enterAnim="@anim/slide_in_left"
+            app:exitAnim="@anim/slide_out_right"
+            app:popEnterAnim="@anim/slide_in_right"
+            app:popExitAnim="@anim/slide_out_left" />
+
+        <action
+            android:id="@+id/action_manualEntryFragment_to_homeFragment"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="false" />
     </fragment>
 
 </navigation>

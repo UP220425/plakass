@@ -16,6 +16,8 @@
 
         <!-- Activar el modo Material Components -->
         <item name="materialThemeOverlay">@style/ThemeOverlay.MaterialComponents</item>
+
+
     </style>
 
 </resources>

@@ -87,6 +87,11 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:4.16.0")
     kapt("com.github.bumptech.glide:compiler:4.16.0")
 
+    implementation("androidx.constraintlayout:constraintlayout:2.2.0")
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
+    implementation("androidx.fragment:fragment-ktx:1.6.2")
+
+
     // 🔹 CameraX (para vista de cámara del escáner)
     val cameraxVersion = "1.3.3"
     implementation("androidx.camera:camera-core:$cameraxVersion")

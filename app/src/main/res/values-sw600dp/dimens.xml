@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Larger dimensions for tablets -->
+    <dimen name="screen_padding">24dp</dimen>
+    <dimen name="avatar_size">100dp</dimen>
+    <dimen name="avatar_corner_radius">50dp</dimen>
+    <dimen name="text_large">22sp</dimen>
+    <dimen name="card_padding">24dp</dimen>
+</resources>

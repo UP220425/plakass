@@ -37,10 +37,10 @@ class UserSettingsFragment : Fragment() {
         }
 
         // Cambiar foto de perfil
-        binding.tvChangePhoto.setOnClickListener {
+        //binding.tvChangePhoto.setOnClickListener {
             // Aquí puedes implementar la lógica para cambiar la foto
-            showMessage("Funcionalidad para cambiar foto en desarrollo")
-        }
+            //showMessage("Funcionalidad para cambiar foto en desarrollo")
+        //}
 
         // Guardar cambios del perfil
         binding.btnSaveProfile.setOnClickListener {
@@ -62,9 +62,9 @@ class UserSettingsFragment : Fragment() {
         // Aquí cargarías los datos reales del usuario
         // Por ahora usamos datos de ejemplo
         binding.tvUserName.text = "Juan Pérez"
-        binding.tvUserEmail.text = "juan.perez@email.com"
+        binding.tvUserEmail.text = "juan@email.com"
         binding.etFullName.setText("Juan Pérez")
-        binding.etEmail.setText("juan.perez@email.com")
+        binding.etEmail.setText("juan@email.com")
         binding.etPhone.setText("+52 123 456 7890")
     }
 

@@ -2,6 +2,7 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
     app:startDestination="@id/loginFragment">
 
     <!-- LOGIN -->
@@ -44,12 +45,48 @@
             app:destination="@id/loginFragment"
             app:popUpTo="@id/loginFragment"
             app:popUpToInclusive="true" />
+
     </fragment>
 
+    <!-- HOME -->
     <fragment
         android:id="@+id/homeFragment"
         android:name="PlateRecognitionApp.plakass.ui.home.HomeFragment"
         android:label="Home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home">
+
+        <!-- Acción para ir a configuración de usuario -->
+        <action
+            android:id="@+id/action_homeFragment_to_userSettingsFragment"
+            app:destination="@id/userSettingsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+
+    </fragment>
+
+    <!-- CONFIGURACIÓN DE USUARIO -->
+    <fragment
+        android:id="@+id/userSettingsFragment"
+        android:name="PlateRecognitionApp.plakass.ui.settings.UserSettingsFragment"
+        android:label="Configuración de Usuario"
+        tools:layout="@layout/fragment_user_settings">
+
+        <!-- Acción para volver al home -->
+        <action
+            android:id="@+id/action_userSettingsFragment_to_homeFragment"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="false" />
+
+        <!-- Acción global para ir al login (cerrar sesión) -->
+        <action
+            android:id="@+id/action_global_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/nav_graph"
+            app:popUpToInclusive="true" />
+
+    </fragment>
 
 </navigation>

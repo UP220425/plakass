@@ -92,6 +92,9 @@ dependencies {
     implementation("androidx.fragment:fragment-ktx:1.6.2")
 
 
+    //Animaciones
+    implementation("com.airbnb.android:lottie:6.4.0")
+
     // 🔹 CameraX (para vista de cámara del escáner)
     val cameraxVersion = "1.3.3"
     implementation("androidx.camera:camera-core:$cameraxVersion")

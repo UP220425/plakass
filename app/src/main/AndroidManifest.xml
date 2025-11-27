@@ -4,10 +4,14 @@
 
     <!-- 🔹 Permiso para usar la cámara -->
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-feature android:name="android.hardware.camera" android:required="false" />
 
     <application
+        android:name=".App"
         android:allowBackup="true"
+        android:usesCleartextTraffic="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
@@ -20,6 +24,7 @@
         <!-- 🔹 Actividad principal -->
         <activity
             android:name=".MainActivity"
+            android:windowSoftInputMode="adjustResize"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.PlateRecognitionApp">

@@ -4,13 +4,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import PlateRecognitionApp.plakass.R
+import PlateRecognitionApp.plakass.data.api.ApiClient
+import PlateRecognitionApp.plakass.data.model.ParkingSession
 import PlateRecognitionApp.plakass.databinding.FragmentHistoryBinding
 import PlateRecognitionApp.plakass.ui.history.adapter.HistoryAdapter
 import PlateRecognitionApp.plakass.ui.history.model.ParkingHistory
+import kotlinx.coroutines.launch
 
 class HistoryFragment : Fragment() {
 
@@ -18,11 +23,7 @@ class HistoryFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var historyAdapter: HistoryAdapter
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentHistoryBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -32,8 +33,9 @@ class HistoryFragment : Fragment() {
 
         setupRecyclerView()
         setupClickListeners()
-        loadHistoryData()
         setupFilterButtons()
+
+        loadHistory("all")
     }
 
     private fun setupRecyclerView() {
@@ -53,74 +55,125 @@ class HistoryFragment : Fragment() {
     private fun setupFilterButtons() {
         binding.btnFilterAll.setOnClickListener {
             updateFilterSelection(binding.btnFilterAll)
-            loadHistoryData() // Recargar con filtro "todos"
+            loadHistory("all")
         }
 
         binding.btnFilterMonth.setOnClickListener {
             updateFilterSelection(binding.btnFilterMonth)
-            loadHistoryData() // Recargar con filtro "mes"
+            loadHistory("month")
         }
 
         binding.btnFilterWeek.setOnClickListener {
             updateFilterSelection(binding.btnFilterWeek)
-            loadHistoryData() // Recargar con filtro "semana"
+            loadHistory("week")
         }
     }
 
     private fun updateFilterSelection(selectedButton: com.google.android.material.button.MaterialButton) {
-        // Reset all buttons
         listOf(binding.btnFilterAll, binding.btnFilterMonth, binding.btnFilterWeek).forEach { button ->
-            // Usar setBackgroundColor o ColorStateList
             button.setBackgroundColor(requireContext().getColor(R.color.button_filter_unselected))
             button.setTextColor(requireContext().getColor(R.color.primary_dark))
         }
 
-        // Set selected button
         selectedButton.setBackgroundColor(requireContext().getColor(R.color.primary_dark))
         selectedButton.setTextColor(requireContext().getColor(android.R.color.white))
     }
-    private fun loadHistoryData() {
-        // Datos de ejemplo - en una app real esto vendría de una base de datos o API
-        val historyList = listOf(
-            ParkingHistory(
-                id = "1",
-                date = "15 Nov 2024",
-                plateNumber = "ABC-123",
-                location = "A-25",
-                duration = "2h 15m",
-                cost = "$120",
-                timeRange = "14:30 - 16:45",
-                status = "Completado"
-            ),
-            ParkingHistory(
-                id = "2",
-                date = "14 Nov 2024",
-                plateNumber = "XYZ-789",
-                location = "B-12",
-                duration = "1h 30m",
-                cost = "$80",
-                timeRange = "10:15 - 11:45",
-                status = "Completado"
-            ),
-            ParkingHistory(
-                id = "3",
-                date = "12 Nov 2024",
-                plateNumber = "DEF-456",
-                location = "C-08",
-                duration = "4h 00m",
-                cost = "$200",
-                timeRange = "09:00 - 13:00",
-                status = "Completado"
-            )
-        )
 
-        if (historyList.isEmpty()) {
-            showEmptyState()
-        } else {
-            showHistoryList()
-            historyAdapter.submitList(historyList)
-            updateStatistics(historyList)
+    // ---------------------------------------------------------
+    // 🚀  CARGA HISTORIAL DESDE EL BACKEND
+    // ---------------------------------------------------------
+    private fun loadHistory(filter: String) {
+        lifecycleScope.launch {
+            try {
+                val response = when (filter) {
+                    "week" -> ApiClient.retrofit.getHistoryWeek()
+                    "month" -> ApiClient.retrofit.getHistoryMonth()
+                    else -> ApiClient.retrofit.getHistoryAll()
+                }
+
+                if (!response.isSuccessful || response.body()?.status != true) {
+                    Toast.makeText(requireContext(), "Error cargando historial", Toast.LENGTH_SHORT).show()
+                    return@launch
+                }
+
+                val data = response.body()!!.data
+                val listUI = data.sessions.map { it.toUI() }
+
+                if (listUI.isEmpty()) {
+                    showEmptyState()
+                } else {
+                    showHistoryList()
+                    historyAdapter.submitList(listUI)
+                    updateStatistics(listUI)
+                }
+
+            } catch (e: Exception) {
+                Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_LONG).show()
+            }
         }
+    }
+
+    // ---------------------------------------------------------
+    // 🚀 MAPEAR JSON DEL BACKEND → UI MODEL
+    // ---------------------------------------------------------
+    private fun ParkingSession.toUI(): ParkingHistory {
+
+        // Formatear fecha
+        val dateFormatted = entry_time?.substring(0, 10) ?: "Sin fecha"
+
+        // Horario
+        val start = entry_time?.let {
+            try { it.substring(11, 16) } catch (e: Exception) { "?" }
+        } ?: "?"
+
+        val end = exit_time?.let {
+            try { it.substring(11, 16) } catch (e: Exception) { "?" }
+        } ?: "?"
+
+        val timeRange = if (exit_time != null) "$start - $end" else "En progreso"
+
+        // Duración
+        val durationStr = duration_minutes?.let {
+            val h = (it / 60).toInt()
+            val m = (it % 60).toInt()
+            "${h}h ${m}m"
+        } ?: "N/A"
+
+        // Costo
+        val costStr = price?.let { "$$it" } ?: "$0"
+
+        // Vehículo
+        val location = vehicle_info?.brand ?: "Sin datos"
+
+        // Estado
+        val statusStr = when (status) {
+            "EXITED" -> "Completado"
+            "PAID" -> "Pagado"
+            "IN_PROGRESS" -> "Activo"
+            else -> "Desconocido"
+        }
+
+        return ParkingHistory(
+            id = id,
+            date = dateFormatted,
+            plateNumber = plate ?: "N/A",
+            location = location,
+            duration = durationStr,
+            cost = costStr,
+            timeRange = timeRange,
+            status = statusStr
+        )
+    }
+
+
+    private fun updateStatistics(historyList: List<ParkingHistory>) {
+        binding.tvTotalVisits.text = historyList.size.toString()
+
+        val totalTime = historyList.sumOf { it.duration.toMinutes() }
+        binding.tvTotalTime.text = "${totalTime / 60}h ${totalTime % 60}m"
+
+        val totalCost = historyList.sumOf { it.cost.toMoney() }
+        binding.tvTotalSpent.text = "$${"%.2f".format(totalCost)}"
     }
 
     private fun showEmptyState() {
@@ -133,39 +186,25 @@ class HistoryFragment : Fragment() {
         binding.emptyState.visibility = View.GONE
     }
 
-    private fun updateStatistics(historyList: List<ParkingHistory>) {
-        binding.tvTotalVisits.text = historyList.size.toString()
-
-        // Calcular tiempo total (ejemplo simplificado)
-        val totalMinutes = historyList.sumOf { it.duration.toMinutes() }
-        val hours = totalMinutes / 60
-        val minutes = totalMinutes % 60
-        binding.tvTotalTime.text = "${hours}h ${minutes}m"
-
-        // Calcular gasto total
-        val totalCost = historyList.sumOf { it.cost.toDouble() }
-        binding.tvTotalSpent.text = "$${"%.2f".format(totalCost)}"
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
 }
 
-// Extension functions para conversión (deberían ir en un archivo separado)
+// ---------------------------------------------------------
 fun String.toMinutes(): Int {
     return when {
-        this.contains("h") && this.contains("m") -> {
-            val parts = this.split("h", "m")
-            parts[0].trim().toInt() * 60 + parts[1].trim().toInt()
+        contains("h") && contains("m") -> {
+            val p = split("h", "m")
+            p[0].trim().toInt() * 60 + p[1].trim().toInt()
         }
-        this.contains("h") -> this.replace("h", "").trim().toInt() * 60
-        this.contains("m") -> this.replace("m", "").trim().toInt()
+        contains("h") -> replace("h", "").trim().toInt() * 60
+        contains("m") -> replace("m", "").trim().toInt()
         else -> 0
     }
 }
 
-fun String.toDouble(): Double {
-    return this.replace("$", "").replace(",", "").toDoubleOrNull() ?: 0.0
+fun String.toMoney(): Double {
+    return replace("$", "").trim().toDoubleOrNull() ?: 0.0
 }

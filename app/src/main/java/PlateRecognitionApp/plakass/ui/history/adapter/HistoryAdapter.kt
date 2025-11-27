@@ -9,7 +9,8 @@ import PlateRecognitionApp.plakass.R
 import PlateRecognitionApp.plakass.databinding.ItemParkingHistoryBinding
 import PlateRecognitionApp.plakass.ui.history.model.ParkingHistory
 
-class HistoryAdapter : ListAdapter<ParkingHistory, HistoryAdapter.HistoryViewHolder>(DiffCallback) {
+class HistoryAdapter :
+    ListAdapter<ParkingHistory, HistoryAdapter.HistoryViewHolder>(DiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryViewHolder {
         val binding = ItemParkingHistoryBinding.inflate(
@@ -21,12 +22,12 @@ class HistoryAdapter : ListAdapter<ParkingHistory, HistoryAdapter.HistoryViewHol
     }
 
     override fun onBindViewHolder(holder: HistoryViewHolder, position: Int) {
-        val historyItem = getItem(position)
-        holder.bind(historyItem)
+        holder.bind(getItem(position))
     }
 
-    inner class HistoryViewHolder(private val binding: ItemParkingHistoryBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+    inner class HistoryViewHolder(
+        private val binding: ItemParkingHistoryBinding
+    ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(history: ParkingHistory) {
             binding.tvDate.text = history.date
@@ -37,7 +38,6 @@ class HistoryAdapter : ListAdapter<ParkingHistory, HistoryAdapter.HistoryViewHol
             binding.tvTime.text = history.timeRange
             binding.chipStatus.text = history.status
 
-            // Cambiar color del chip según el estado
             when (history.status) {
                 "Completado" -> {
                     binding.chipStatus.setChipBackgroundColorResource(R.color.green_light)
@@ -56,12 +56,10 @@ class HistoryAdapter : ListAdapter<ParkingHistory, HistoryAdapter.HistoryViewHol
     }
 
     companion object DiffCallback : DiffUtil.ItemCallback<ParkingHistory>() {
-        override fun areItemsTheSame(oldItem: ParkingHistory, newItem: ParkingHistory): Boolean {
-            return oldItem.id == newItem.id
-        }
+        override fun areItemsTheSame(oldItem: ParkingHistory, newItem: ParkingHistory) =
+            oldItem.id == newItem.id
 
-        override fun areContentsTheSame(oldItem: ParkingHistory, newItem: ParkingHistory): Boolean {
-            return oldItem == newItem
-        }
+        override fun areContentsTheSame(oldItem: ParkingHistory, newItem: ParkingHistory) =
+            oldItem == newItem
     }
 }

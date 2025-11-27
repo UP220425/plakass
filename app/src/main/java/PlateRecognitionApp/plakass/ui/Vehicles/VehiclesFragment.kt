@@ -4,18 +4,21 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.snackbar.Snackbar
-import PlateRecognitionApp.plakass.R
+import PlateRecognitionApp.plakass.data.api.ApiClient
 import PlateRecognitionApp.plakass.databinding.DialogVehicleDetailsBinding
 import PlateRecognitionApp.plakass.databinding.DialogVehicleFormBinding
 import PlateRecognitionApp.plakass.databinding.FragmentVehiclesBinding
+import kotlinx.coroutines.launch
+import PlateRecognitionApp.plakass.R
 
 class VehiclesFragment : Fragment() {
 
@@ -23,6 +26,8 @@ class VehiclesFragment : Fragment() {
     private lateinit var vehiclesAdapter: VehiclesAdapter
     private val vehiclesList = mutableListOf<Vehicle>()
     private var selectedVehicle: Vehicle? = null
+
+    private val TAG = "VEHICLES_FRAGMENT"
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,9 +42,12 @@ class VehiclesFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
         setupClickListeners()
-        loadVehicles()
+        loadVehiclesFromAPI()
     }
 
+    // -----------------------------------
+    // RECYCLER
+    // -----------------------------------
     private fun setupRecyclerView() {
         vehiclesAdapter = VehiclesAdapter(vehiclesList) { vehicle, action ->
             when (action) {
@@ -69,110 +77,158 @@ class VehiclesFragment : Fragment() {
         }
     }
 
+    // -----------------------------------
+    // GET /vehicles/my
+    // -----------------------------------
+    private fun loadVehiclesFromAPI() {
+        lifecycleScope.launch {
+            try {
+                Log.e(TAG, "Llamando GET /vehicles/my ...")
+
+                val response = ApiClient.retrofit.getMyVehicles()
+
+                Log.e(TAG, "GET /vehicles/my -> code=${response.code()}")
+                Log.e(TAG, "RAW: ${response.raw()}")
+
+                if (response.isSuccessful && response.body()?.status == true) {
+                    val vehicles = response.body()!!.data
+                    Log.e(TAG, "Vehículos recibidos: $vehicles")
+
+                    vehiclesList.clear()
+                    vehiclesList.addAll(
+                        vehicles.map {
+                            Vehicle(
+                                id = it.id,
+                                licensePlate = it.plate,
+                                brand = it.brand,
+                                model = it.model,
+                                color = it.color,
+                                year = it.year,
+                                isDefault = false
+                            )
+                        }
+                    )
+
+                    vehiclesAdapter.notifyDataSetChanged()
+                    updateEmptyState()
+                } else {
+                    val errorStr = response.errorBody()?.string()
+                    Log.e(TAG, "Error en GET /vehicles/my: $errorStr")
+                    Toast.makeText(requireContext(), "Error cargando vehículos", Toast.LENGTH_LONG).show()
+                }
+
+            } catch (e: Exception) {
+                Log.e(TAG, "EXCEPCIÓN en loadVehiclesFromAPI", e)
+                Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    // -----------------------------------
+    // POST /vehicles/add
+    // -----------------------------------
+    private fun saveVehicle(
+        plate: String,
+        brand: String,
+        model: String,
+        color: String,
+        year: Int,
+        isDefault: Boolean
+    ) {
+        lifecycleScope.launch {
+            try {
+
+                val body = hashMapOf<String, Any>(
+                    "plate" to plate,
+                    "brand" to brand,
+                    "model" to model,
+                    "color" to color,
+                    "year" to year
+                )
+
+                Log.e(TAG, "BODY ENVIADO: $body")
+
+                val response = ApiClient.retrofit.addVehicle(body)
+
+                Log.e(TAG, "RESPONSE: ${response.raw()}")
+
+                if (response.isSuccessful && response.body()?.status == true) {
+                    Toast.makeText(requireContext(), "Vehículo agregado", Toast.LENGTH_SHORT).show()
+                    loadVehiclesFromAPI()
+                } else {
+                    Toast.makeText(requireContext(), response.body()?.message ?: "Error desconocido", Toast.LENGTH_SHORT).show()
+                }
+
+            } catch (e: Exception) {
+                Log.e(TAG, "ERROR saveVehicle", e)
+                Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    // -----------------------------------
+    // FORMULARIO (ADD / EDIT)
+    // -----------------------------------
     private fun showVehicleForm(vehicle: Vehicle?) {
         selectedVehicle = vehicle
 
         val dialogBinding = DialogVehicleFormBinding.inflate(LayoutInflater.from(requireContext()))
-
-        // CAMBIADO: Usar AlertDialog.Builder en lugar de MaterialAlertDialogBuilder
         val dialog = AlertDialog.Builder(requireContext())
             .setView(dialogBinding.root)
             .create()
 
-        setupDialogViews(dialogBinding, dialog, vehicle)
-        dialog.show()
-    }
-
-    private fun setupDialogViews(
-        dialogBinding: DialogVehicleFormBinding,
-        dialog: Dialog,
-        vehicle: Vehicle?
-    ) {
-        // Si es edición, llenar los campos
-        vehicle?.let {
-            dialogBinding.etLicensePlate.setText(it.licensePlate)
-            dialogBinding.etBrand.setText(it.brand)
-            dialogBinding.etModel.setText(it.model)
-            dialogBinding.etColor.setText(it.color)
-            dialogBinding.etYear.setText(it.year.toString())
-            dialogBinding.cbDefault.isChecked = it.isDefault
+        if (vehicle != null) {
+            dialogBinding.etLicensePlate.setText(vehicle.licensePlate)
+            dialogBinding.etBrand.setText(vehicle.brand)
+            dialogBinding.etModel.setText(vehicle.model)
+            dialogBinding.etColor.setText(vehicle.color)
+            dialogBinding.etYear.setText(vehicle.year.toString())
             dialogBinding.btnSave.text = "Actualizar"
         }
 
-        dialogBinding.btnCancel.setOnClickListener {
-            dialog.dismiss()
-        }
+        dialogBinding.btnCancel.setOnClickListener { dialog.dismiss() }
 
         dialogBinding.btnSave.setOnClickListener {
             if (validateForm(dialogBinding)) {
                 saveVehicle(
-                    licensePlate = dialogBinding.etLicensePlate.text.toString(),
-                    brand = dialogBinding.etBrand.text.toString(),
-                    model = dialogBinding.etModel.text.toString(),
-                    color = dialogBinding.etColor.text.toString(),
-                    year = dialogBinding.etYear.text.toString().toIntOrNull() ?: 0,
-                    isDefault = dialogBinding.cbDefault.isChecked
+                    dialogBinding.etLicensePlate.text.toString(),
+                    dialogBinding.etBrand.text.toString(),
+                    dialogBinding.etModel.text.toString(),
+                    dialogBinding.etColor.text.toString(),
+                    dialogBinding.etYear.text.toString().toInt(),
+                    dialogBinding.cbDefault.isChecked
                 )
                 dialog.dismiss()
-                showSaveConfirmation()
             }
         }
+
+        dialog.show()
     }
 
     private fun validateForm(dialogBinding: DialogVehicleFormBinding): Boolean {
-        var isValid = true
-
         val fields = listOf(
-            dialogBinding.etLicensePlate to "Placa",
-            dialogBinding.etBrand to "Marca",
-            dialogBinding.etModel to "Modelo",
-            dialogBinding.etColor to "Color",
-            dialogBinding.etYear to "Año"
+            dialogBinding.etLicensePlate,
+            dialogBinding.etBrand,
+            dialogBinding.etModel,
+            dialogBinding.etColor,
+            dialogBinding.etYear
         )
 
-        fields.forEach { (field, fieldName) ->
+        return fields.all { field ->
             if (field.text.isNullOrEmpty()) {
-                field.error = "$fieldName es requerido"
-                isValid = false
-            } else {
-                field.error = null
-            }
+                field.error = "Requerido"
+                false
+            } else true
         }
-        return isValid
     }
 
-    private fun saveVehicle(licensePlate: String, brand: String, model: String, color: String, year: Int, isDefault: Boolean) {
-        val vehicle = Vehicle(
-            id = selectedVehicle?.id ?: System.currentTimeMillis(),
-            licensePlate = licensePlate,
-            brand = brand,
-            model = model,
-            color = color,
-            year = year,
-            isDefault = isDefault
-        )
-
-        if (selectedVehicle == null) {
-            // Agregar nuevo vehículo
-            vehiclesList.add(vehicle)
-            vehiclesAdapter.notifyItemInserted(vehiclesList.size - 1)
-            binding.rvVehicles.smoothScrollToPosition(vehiclesList.size - 1)
-        } else {
-            // Actualizar vehículo existente
-            val index = vehiclesList.indexOfFirst { it.id == selectedVehicle?.id }
-            if (index != -1) {
-                vehiclesList[index] = vehicle
-                vehiclesAdapter.notifyItemChanged(index)
-            }
-        }
-        updateEmptyState()
-    }
-
+    // -----------------------------------
+    // DELETE /vehicles/delete/{id}
+    // -----------------------------------
     private fun showDeleteConfirmation(vehicle: Vehicle) {
-        // CAMBIADO: Usar AlertDialog.Builder en lugar de MaterialAlertDialogBuilder
         AlertDialog.Builder(requireContext())
             .setTitle("Eliminar Vehículo")
-            .setMessage("¿Estás seguro de que quieres eliminar el vehículo ${vehicle.licensePlate}?")
+            .setMessage("¿Seguro que quieres eliminar ${vehicle.licensePlate}?")
             .setPositiveButton("Eliminar") { dialog, _ ->
                 deleteVehicle(vehicle)
                 dialog.dismiss()
@@ -182,140 +238,74 @@ class VehiclesFragment : Fragment() {
     }
 
     private fun deleteVehicle(vehicle: Vehicle) {
-        val index = vehiclesList.indexOfFirst { it.id == vehicle.id }
-        if (index != -1) {
-            val deletedVehicle = vehiclesList.removeAt(index)
-            vehiclesAdapter.notifyItemRemoved(index)
-            showUndoSnackbar(deletedVehicle, index)
-        }
-        updateEmptyState()
-    }
+        lifecycleScope.launch {
+            try {
+                Log.e(TAG, "DELETE /vehicles/delete/${vehicle.id}")
 
-    private fun showUndoSnackbar(vehicle: Vehicle, index: Int) {
-        val snackbar = Snackbar.make(binding.root, "Vehículo eliminado", Snackbar.LENGTH_LONG)
-            .setAction("DESHACER") {
-                vehiclesList.add(index, vehicle)
-                vehiclesAdapter.notifyItemInserted(index)
-                updateEmptyState()
+                val response = ApiClient.retrofit.deleteVehicle(vehicle.id)
+
+                Log.e(TAG, "DELETE -> code=${response.code()}")
+                Log.e(TAG, "RAW: ${response.raw()}")
+
+                val body = response.body()
+                Log.e(TAG, "BODY PARSEADO DELETE: $body")
+
+                if (response.isSuccessful && body?.status == true) {
+                    Toast.makeText(requireContext(), "Vehículo eliminado", Toast.LENGTH_SHORT).show()
+                    loadVehiclesFromAPI()
+                } else {
+                    val msg = body?.message ?: "Error al eliminar"
+                    Log.e(TAG, "ERROR AL ELIMINAR VEHÍCULO: $msg")
+                    Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "EXCEPCIÓN en deleteVehicle", e)
+                Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
             }
-            .setActionTextColor(Color.YELLOW)
-
-        snackbar.view.setBackgroundColor(Color.parseColor("#1A237E"))
-        snackbar.show()
+        }
     }
 
+    // -----------------------------------
+    // DETALLES VEHÍCULO
+    // -----------------------------------
     private fun showVehicleDetails(vehicle: Vehicle) {
         val dialogBinding = DialogVehicleDetailsBinding.inflate(LayoutInflater.from(requireContext()))
-
-        // CAMBIADO: Usar AlertDialog.Builder en lugar de MaterialAlertDialogBuilder
         val dialog = AlertDialog.Builder(requireContext())
             .setView(dialogBinding.root)
             .create()
 
-        setupVehicleDetails(dialogBinding, vehicle, dialog)
+        dialogBinding.tvDetailLicensePlate.text = vehicle.licensePlate
+        dialogBinding.tvDetailBrand.text = vehicle.brand
+        dialogBinding.tvDetailModel.text = vehicle.model
+        dialogBinding.tvDetailColor.text = vehicle.color
+        dialogBinding.tvDetailYear.text = vehicle.year.toString()
+
+        dialogBinding.btnCloseDetails.setOnClickListener { dialog.dismiss() }
+
         dialog.show()
     }
 
-    private fun setupVehicleDetails(
-        binding: DialogVehicleDetailsBinding,
-        vehicle: Vehicle,
-        dialog: Dialog
-    ) {
-        // Header con placa
-        binding.tvDetailLicensePlate.text = vehicle.licensePlate
-        binding.tvDefaultBadge.visibility = if (vehicle.isDefault) View.VISIBLE else View.GONE
-
-        // Información básica
-        binding.tvDetailBrand.text = vehicle.brand
-        binding.tvDetailModel.text = vehicle.model
-        binding.tvDetailColor.text = vehicle.color
-        binding.tvDetailYear.text = vehicle.year.toString()
-
-        // Color indicator dinámico
-        val colorMap = mapOf(
-            "Rojo" to Color.RED,
-            "Azul" to Color.BLUE,
-            "Verde" to Color.GREEN,
-            "Negro" to Color.BLACK,
-            "Blanco" to Color.WHITE,
-            "Gris" to Color.GRAY,
-            "Plateado" to Color.LTGRAY,
-            "Amarillo" to Color.YELLOW,
-            "Naranja" to Color.parseColor("#FF9800"),
-            "Morado" to Color.parseColor("#9C27B0"),
-            "Rosa" to Color.parseColor("#E91E63"),
-            "Marrón" to Color.parseColor("#795548"),
-            "Azul Marino" to Color.parseColor("#1976D2"),
-            "Verde Oscuro" to Color.parseColor("#388E3C")
-        )
-        binding.colorIndicator.setBackgroundColor(colorMap[vehicle.color] ?: Color.GRAY)
-
-        // Botones de acción
-        binding.btnCloseDetails.setOnClickListener {
-            dialog.dismiss()
-        }
-
-        binding.btnEditVehicle.setOnClickListener {
-            dialog.dismiss()
-            showVehicleForm(vehicle) // Navegar a edición
-        }
-
-        // Opcional: Configurar estadísticas reales si las tienes
-        setupVehicleStatistics(binding, vehicle)
-    }
-
-    private fun setupVehicleStatistics(binding: DialogVehicleDetailsBinding, vehicle: Vehicle) {
-        // Aquí puedes agregar estadísticas reales del vehículo si las tienes
-        // Por ahora son datos de ejemplo
-        val visits = 15
-        val totalTime = "45h"
-        val totalSpent = "$850"
-
-        // Si tienes datos reales, reemplaza estos valores
-        // Ejemplo: binding.tvVisitsCount.text = vehicle.visits.toString()
-    }
-
+    // -----------------------------------
+    // VEHÍCULO PRINCIPAL (SOLO LOCAL)
+    // -----------------------------------
     private fun setAsDefaultVehicle(vehicle: Vehicle) {
         vehiclesList.forEach { it.isDefault = false }
         vehicle.isDefault = true
         vehiclesAdapter.notifyDataSetChanged()
-        Toast.makeText(requireContext(), "${vehicle.licensePlate} establecido como principal", Toast.LENGTH_SHORT).show()
-    }
-
-    private fun showSaveConfirmation() {
-        val text = if (selectedVehicle == null) "Vehículo agregado" else "Vehículo actualizado"
-        Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), "${vehicle.licensePlate} ahora es principal", Toast.LENGTH_SHORT).show()
     }
 
     private fun updateEmptyState() {
-        if (vehiclesList.isEmpty()) {
-            binding.emptyState.visibility = View.VISIBLE
-            binding.rvVehicles.visibility = View.GONE
-        } else {
-            binding.emptyState.visibility = View.GONE
-            binding.rvVehicles.visibility = View.VISIBLE
-        }
-    }
-
-    private fun loadVehicles() {
-        if (vehiclesList.isEmpty()) {
-            vehiclesList.addAll(getSampleVehicles())
-            vehiclesAdapter.notifyDataSetChanged()
-            updateEmptyState()
-        }
-    }
-
-    private fun getSampleVehicles(): List<Vehicle> {
-        return listOf(
-            Vehicle(1, "ABC-123", "Toyota", "Corolla", "Rojo", 2022, true),
-            Vehicle(2, "XYZ-789", "Honda", "Civic", "Azul", 2021, false),
-            Vehicle(3, "DEF-456", "Ford", "Mustang", "Negro", 2023, false)
-        )
+        binding.emptyState.visibility = if (vehiclesList.isEmpty()) View.VISIBLE else View.GONE
+        binding.rvVehicles.visibility = if (vehiclesList.isNotEmpty()) View.VISIBLE else View.GONE
     }
 }
 
+// -----------------------------------
+// DATA CLASS
+// -----------------------------------
 data class Vehicle(
-    val id: Long,
+    val id: String,
     val licensePlate: String,
     val brand: String,
     val model: String,

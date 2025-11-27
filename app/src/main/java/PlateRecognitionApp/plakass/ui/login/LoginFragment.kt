@@ -6,16 +6,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import PlateRecognitionApp.plakass.R
 import PlateRecognitionApp.plakass.databinding.FragmentLoginBinding
+import PlateRecognitionApp.plakass.utils.SessionManager
+import PlateRecognitionApp.plakass.data.socket.SocketHandler
 import com.airbnb.lottie.LottieAnimationView
 
 class LoginFragment : Fragment() {
 
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
+
+    private val viewModel: LoginViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -29,14 +35,50 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Ir al registro
         binding.tvRegister.setOnClickListener {
             findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
         }
 
-        // Mostrar animación de login al presionar el botón
         binding.btnLogin.setOnClickListener {
-            showDualAnimation()
+            validateAndLogin()
+        }
+    }
+
+    private fun validateAndLogin() {
+
+        val email = binding.etEmail.text.toString().trim()
+        val pass = binding.etPassword.text.toString().trim()
+
+        if (email.isEmpty()) {
+            binding.etEmail.error = "Ingresa tu correo"
+            return
+        }
+
+        if (pass.isEmpty()) {
+            binding.etPassword.error = "Ingresa tu contraseña"
+            return
+        }
+
+        viewModel.login(email, pass) { ok, msg, data, token ->
+            if (ok && data != null && token != null) {
+
+                // Guardar token
+                SessionManager.saveToken(requireContext(), token)
+
+                // Guardar user_id
+                val prefs = requireContext().getSharedPreferences("user_prefs", 0)
+                prefs.edit()
+                    .putString("user_id", data.id)
+                    .apply()
+
+                // 🔥 AQUÍ SE MANDA EL JOIN AUTOMÁTICO
+                SocketHandler.registerUser(data.id)
+
+                showDualAnimation()
+
+            } else {
+                Toast.makeText(requireContext(), msg, Toast.LENGTH_LONG).show()
+            }
         }
     }
 
@@ -51,41 +93,36 @@ class LoginFragment : Fragment() {
             .setCancelable(false)
             .create()
 
-        // Oscurece el fondo un poco
         dialog.window?.setDimAmount(0.5f)
         dialog.show()
 
-        // 🔹 Efecto de aparición suave (fade in del cuadro)
         dialogView.alpha = 0f
         dialogView.animate()
             .alpha(1f)
             .setDuration(400)
             .start()
 
-        // 🔹 Primera animación: la manita de "cargando"
         animationView.setAnimation(R.raw.loading_hand)
-        animationView.playAnimation()
         textView.text = "Iniciando sesión..."
+        animationView.playAnimation()
 
-        // 🔹 Cuando termina la primera animación, cambiar a la palomita verde
-        animationView.addAnimatorUpdateListener { animator ->
-            if (animationView.progress >= 0.99f) {
-                // Limpiamos y cargamos la animación de éxito
+        animationView.addAnimatorUpdateListener {
+            if (animationView.progress >= 0.90f) {
+
                 animationView.clearAnimation()
                 animationView.setAnimation(R.raw.success_check)
                 textView.text = "¡Inicio exitoso!"
                 animationView.playAnimation()
 
-                // Esperamos un momento antes de cerrar y navegar
                 dialogView.postDelayed({
                     dialog.dismiss()
 
-                    // Solo navega si SIGUE en el LoginFragment (evita crash)
-                    val currentDest = findNavController().currentDestination?.id
-                    if (currentDest == R.id.loginFragment) {
+                    if (isAdded &&
+                        findNavController().currentDestination?.id == R.id.loginFragment
+                    ) {
                         findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
                     }
-                }, 2000)
+                }, 1500)
             }
         }
     }

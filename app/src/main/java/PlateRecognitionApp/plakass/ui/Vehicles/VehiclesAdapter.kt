@@ -31,41 +31,26 @@ class VehiclesAdapter(
             tvColor.text = vehicle.color
             tvYear.text = vehicle.year.toString()
 
-            // Mostrar/ocultar indicador de vehículo principal
             layoutDefault.visibility = if (vehicle.isDefault) View.VISIBLE else View.GONE
 
-            // Configurar menú de opciones
-            setupOptionsMenu(vehicle)
-
-            // Click en el item para ver detalles
-            itemView.setOnClickListener {
-                onItemAction(vehicle, "view")
-            }
-        }
-
-        private fun setupOptionsMenu(vehicle: Vehicle) {
             ivOptions.setOnClickListener { view ->
                 val popup = PopupMenu(view.context, view)
                 popup.menuInflater.inflate(R.menu.menu_vehicle_options, popup.menu)
 
                 popup.setOnMenuItemClickListener { item ->
                     when (item.itemId) {
-                        R.id.menu_edit -> {
-                            onItemAction(vehicle, "edit")
-                            true
-                        }
-                        R.id.menu_delete -> {
-                            onItemAction(vehicle, "delete")
-                            true
-                        }
-                        R.id.menu_set_default -> {
-                            onItemAction(vehicle, "set_default")
-                            true
-                        }
-                        else -> false
+                        R.id.menu_edit -> onItemAction(vehicle, "edit")
+                        R.id.menu_delete -> onItemAction(vehicle, "delete")
+                        R.id.menu_set_default -> onItemAction(vehicle, "set_default")
                     }
+                    true
                 }
+
                 popup.show()
+            }
+
+            itemView.setOnClickListener {
+                onItemAction(vehicle, "view")
             }
         }
     }

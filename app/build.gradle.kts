@@ -91,9 +91,12 @@ dependencies {
     implementation("androidx.recyclerview:recyclerview:1.3.2")
     implementation("androidx.fragment:fragment-ktx:1.6.2")
 
+    //web sockets
+    implementation("io.socket:socket.io-client:2.1.0")
+
 
     //Animaciones
-    implementation("com.airbnb.android:lottie:6.4.0")
+    implementation("com.airbnb.android:lottie:3.4.0")
 
     // 🔹 CameraX (para vista de cámara del escáner)
     val cameraxVersion = "1.3.3"

@@ -12,7 +12,7 @@ class App : Application() {
         SessionManager.init(this)
         Log.d("APP_INIT", "App.kt se ejecutó correctamente")
 
-        SocketHandler.init("http://192.168.1.94:5000")
+        SocketHandler.init("https://plakass-api-amhuasfpadhwdvfm.canadacentral-01.azurewebsites.net")
         SocketHandler.connect()
     }
 

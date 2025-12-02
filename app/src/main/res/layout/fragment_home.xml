@@ -149,6 +149,7 @@
 
                     </LinearLayout>
 
+
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -171,6 +172,18 @@
                             android:textColor="#FFFFFF"
                             android:textStyle="bold" />
 
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnPagar"
+                            android:visibility="gone"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Pagar ahora"
+                            android:textColor="#FFFFFF"
+                            android:textStyle="bold"
+                            app:backgroundTint="#4CAF50"
+                            android:layout_marginTop="16dp"
+                            android:padding="12dp" />
+
                     </LinearLayout>
 
                 </LinearLayout>
@@ -188,6 +201,7 @@
             android:textStyle="bold"
             android:textColor="#1A237E"
             android:layout_marginBottom="16dp" />
+
 
         <!-- GRID DE OPCIONES MEJORADO -->
         <GridLayout

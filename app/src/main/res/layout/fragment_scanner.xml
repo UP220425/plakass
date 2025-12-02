@@ -4,24 +4,25 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000"
+    android:background="#F5F5F5"
     tools:context=".ui.scanner.ScannerFragment">
 
-    <!-- 🔹 Fondo: Cámara en vivo -->
+    <!-- 🔹 Cámara -->
     <androidx.camera.view.PreviewView
         android:id="@+id/previewView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop" />
 
-    <!-- 🔹 Overlay con efecto: exterior oscuro, interior claro -->
+    <!-- 🔹 Overlay suave (más claro) -->
     <View
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/scanner_overlay" />
+        android:background="#40FFFFFF" />
 
-    <!-- 🔹 Marco de escaneo con fondo semi-transparente claro -->
+    <!-- 🔹 Marco de escaneo -->
     <LinearLayout
+        android:id="@+id/centerContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -31,50 +32,56 @@
         <View
             android:layout_width="300dp"
             android:layout_height="300dp"
-            android:background="@drawable/scanner_frame_with_clear_center" />
+            android:background="@drawable/scanner_frame_light" />
 
-        <!-- Texto instructivo -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Apunta al código QR del boleto"
-            android:textColor="#FFFFFF"
-            android:textSize="16sp"
+            android:text="Escanea el código QR del boleto"
+            android:textColor="#1A237E"
+            android:textSize="18sp"
             android:textStyle="bold"
-            android:layout_marginTop="24dp"
-            android:shadowColor="#000000"
-            android:shadowDx="2"
-            android:shadowDy="2"
-            android:shadowRadius="4" />
+            android:layout_marginTop="20dp" />
 
         <TextView
             android:layout_width="280dp"
             android:layout_height="wrap_content"
-            android:text="Asegúrate de que el código QR esté dentro del marco"
-            android:textColor="#E3F2FD"
+            android:text="Coloca el QR dentro del recuadro para continuar."
+            android:textColor="#455A64"
             android:textSize="14sp"
             android:gravity="center"
-            android:layout_marginTop="8dp"
-            android:lineSpacingExtra="4dp" />
+            android:layout_marginTop="6dp"
+            android:lineSpacingExtra="3dp" />
+
+        <!-- 🔹 Aquí VA EL txtStatus, no en el header -->
+        <TextView
+            android:id="@+id/txtStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="#1A237E"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_marginTop="18dp" />
 
     </LinearLayout>
 
-    <!-- 🔹 Header simple -->
+    <!-- 🔹 Header -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="24dp"
+        android:padding="20dp"
         android:gravity="center_vertical">
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/btnBack"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            app:cardCornerRadius="24dp"
-            app:cardElevation="8dp"
-            app:cardBackgroundColor="#1A237E"
-            android:foreground="?android:attr/selectableItemBackground"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            app:cardCornerRadius="23dp"
+            app:cardElevation="6dp"
+            app:cardBackgroundColor="#FFFFFF"
             android:clickable="true"
             android:focusable="true">
 
@@ -82,7 +89,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="←"
-                android:textColor="#FFFFFF"
+                android:textColor="#1A237E"
                 android:textSize="20sp"
                 android:gravity="center" />
 
@@ -93,56 +100,55 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Escanear Boleto"
-            android:textColor="#FFFFFF"
-            android:textSize="24sp"
+            android:textColor="#1A237E"
+            android:textSize="22sp"
             android:textStyle="bold"
             android:gravity="center"
             android:layout_marginStart="16dp" />
 
     </LinearLayout>
 
-    <!-- 🔹 Parte inferior -->
+    <!-- 🔹 Footer -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:orientation="vertical"
         android:gravity="center_horizontal"
-        android:padding="24dp">
+        android:padding="26dp"
+        android:orientation="vertical">
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="12dp"
-            app:cardBackgroundColor="#FFFFFF"
-            android:layout_marginBottom="16dp">
+            app:cardCornerRadius="18dp"
+            app:cardElevation="8dp"
+            app:cardBackgroundColor="#FFFFFF">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="20dp">
+                android:padding="20dp"
+                android:gravity="center_horizontal">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="¿Problemas con el escáner?"
-                    android:textColor="#666666"
+                    android:text="¿Problemas al escanear?"
+                    android:textColor="#546E7A"
                     android:textSize="14sp"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginBottom="12dp" />
+                    android:layout_marginBottom="10dp" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnEnterTicket"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Ingresar número manualmente"
+                    android:text="Ingresar ticket manualmente"
                     android:textColor="#1A237E"
-                    android:textSize="16sp"
                     android:textStyle="bold"
-                    app:backgroundTint="#E3F2FD"
+                    android:textSize="16sp"
                     app:cornerRadius="16dp"
+                    app:backgroundTint="#E3F2FD"
                     android:paddingVertical="14dp" />
 
             </LinearLayout>

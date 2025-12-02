@@ -37,13 +37,13 @@ class HomeFragment : Fragment() {
         Log.d("HOME", "HomeFragment cargado")
 
         setupClickListeners()
-        loadUserDataFromBackend()   // ← USAMOS LA OPCIÓN 2 AQUÍ
+        loadUserDataFromBackend()
         setupCardClickListeners()
         setupSocketListeners()
     }
 
     // -------------------------------------------------------
-    //   🔥 OPCIÓN 2 — CARGAR USUARIO REAL DESDE BACKEND
+    //   🔥 CARGAR USUARIO REAL DESDE EL BACKEND
     // -------------------------------------------------------
     private fun loadUserDataFromBackend() {
         lifecycleScope.launch {
@@ -53,17 +53,22 @@ class HomeFragment : Fragment() {
                 if (response.isSuccessful && response.body()?.status == true) {
 
                     val user = response.body()?.data
-                    val nombre = user?.name ?: "Usuario"
+                    val role = user?.role ?: "user"
 
-                    // Mostrar en pantalla
+                    // Mostrar u ocultar el PANEL ADMIN
+                    binding.cardAdmin.visibility =
+                        if (role == "admin") View.VISIBLE else View.GONE
+
+                    val nombre = user?.name ?: "Usuario"
                     binding.tvUserName.text = nombre.split(" ")[0]
 
-                    // Guardar en SharedPreferences (refresco global)
+                    // Guardar en SharedPreferences
                     val prefs = requireContext().getSharedPreferences("user_prefs", 0).edit()
                     prefs.putString("user_name", nombre)
+                    prefs.putString("role", role)
                     prefs.apply()
 
-                    Log.d("HOME", "Nombre cargado desde backend: $nombre")
+                    Log.d("HOME", "Usuario cargado: $nombre ($role)")
 
                 } else {
                     binding.tvUserName.text = "Usuario"
@@ -77,7 +82,7 @@ class HomeFragment : Fragment() {
     }
 
     // -------------------------------------------------------
-    //        SOCKET LISTENERS (CORREGIDOS)
+    //        SOCKET LISTENERS
     // -------------------------------------------------------
     private fun setupSocketListeners() {
         socket = SocketHandler.getSocket()
@@ -131,14 +136,17 @@ class HomeFragment : Fragment() {
     }
 
     // -------------------------------------------------------
-    //                  UI CORREGIDA
+    //                  UI DE ESTADO
     // -------------------------------------------------------
     private fun updateStatusUI(json: JSONObject) {
         val isParked = json.optBoolean("is_parked", false)
         val status = json.optString("status", "NONE")
 
         val entryTimeRaw = json.optString("entry_time", "")
-        val fecha = if (entryTimeRaw.contains("T")) entryTimeRaw.substring(0, 10) else "--/--/----"
+        val fecha = if (entryTimeRaw.contains("T"))
+            entryTimeRaw.substring(0, 10)
+        else "--/--/----"
+
         binding.tvFechaInicio.text = fecha
 
         val totalMinutes = json.optDouble("elapsed_minutes", 0.0)
@@ -160,7 +168,7 @@ class HomeFragment : Fragment() {
     }
 
     // -------------------------------------------------------
-    //                 CONFIG GENERAL
+    //                 CLICK LISTENERS
     // -------------------------------------------------------
     private fun setupClickListeners() {
         binding.ivProfile.setOnClickListener {
@@ -183,6 +191,10 @@ class HomeFragment : Fragment() {
 
         binding.cardConfiguracion.setOnClickListener {
             findNavController().navigate(R.id.action_homeFragment_to_userSettingsFragment)
+        }
+
+        binding.cardAdmin.setOnClickListener {
+            findNavController().navigate(R.id.adminPanelFragment)
         }
     }
 

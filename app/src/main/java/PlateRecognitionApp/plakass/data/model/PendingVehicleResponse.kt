@@ -1,7 +1,7 @@
 package PlateRecognitionApp.plakass.data.model
 
-data class BasicResponse(
+data class PendingVehicleResponse(
     val status: Boolean,
     val message: String,
-    val data: Any? = null
+    val data: List<PendingVehicle>
 )

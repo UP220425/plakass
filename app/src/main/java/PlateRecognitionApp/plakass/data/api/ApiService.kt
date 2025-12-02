@@ -7,6 +7,8 @@ import PlateRecognitionApp.plakass.data.model.UpdateUserResponse
 import PlateRecognitionApp.plakass.data.model.UserDataResponse
 import PlateRecognitionApp.plakass.data.model.VehiclesResponse
 import PlateRecognitionApp.plakass.data.model.ParkingHistoryResponse
+import PlateRecognitionApp.plakass.data.model.PendingVehicleResponse
+import PlateRecognitionApp.plakass.data.model.EntryQRResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -58,5 +60,17 @@ interface ApiService {
 
     @GET("parking/history/month")
     suspend fun getHistoryMonth(): Response<ParkingHistoryResponse>
+
+    @GET("parking/entry-qr")
+    suspend fun getEntryQR(): Response<EntryQRResponse>
+
+    @GET("parking/pending")
+    suspend fun getPendingNoApp(): Response<PendingVehicleResponse>
+
+    @POST("parking/pay/noapp")
+    suspend fun payNoApp(@Body body: HashMap<String, Any>): Response<BasicResponse>
+
+    @POST("parking/scan")
+    suspend fun registerScan(@Body body: HashMap<String, Any>): Response<BasicResponse>
 
 }

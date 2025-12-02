@@ -9,6 +9,7 @@ import PlateRecognitionApp.plakass.data.model.VehiclesResponse
 import PlateRecognitionApp.plakass.data.model.ParkingHistoryResponse
 import PlateRecognitionApp.plakass.data.model.PendingVehicleResponse
 import PlateRecognitionApp.plakass.data.model.EntryQRResponse
+import PlateRecognitionApp.plakass.data.model.ParkingStatusResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -72,5 +73,11 @@ interface ApiService {
 
     @POST("parking/scan")
     suspend fun registerScan(@Body body: HashMap<String, Any>): Response<BasicResponse>
+
+    @POST("parking/pay")
+    suspend fun payParking(@Body body: HashMap<String, Any>): Response<BasicResponse>
+
+    @GET("parking/status")
+    suspend fun parkingStatus(): Response<ParkingStatusResponse>
 
 }

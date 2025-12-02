@@ -6,7 +6,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object ApiClient {
 
-    private const val BASE_URL = "http://192.168.1.94:5000/"
+    private const val BASE_URL = "https://plakass-api-amhuasfpadhwdvfm.canadacentral-01.azurewebsites.net/"
 
     private val client = OkHttpClient.Builder()
         .addInterceptor(AuthInterceptor())

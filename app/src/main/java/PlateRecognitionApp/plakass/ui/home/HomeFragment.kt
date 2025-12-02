@@ -37,6 +37,7 @@ class HomeFragment : Fragment() {
         Log.d("HOME", "HomeFragment cargado")
 
         setupClickListeners()
+        setupPagarListener()
         loadUserDataFromBackend()
         setupCardClickListeners()
         setupSocketListeners()
@@ -55,7 +56,7 @@ class HomeFragment : Fragment() {
                     val user = response.body()?.data
                     val role = user?.role ?: "user"
 
-                    // Mostrar u ocultar el PANEL ADMIN
+                    // PANEL ADMIN
                     binding.cardAdmin.visibility =
                         if (role == "admin") View.VISIBLE else View.GONE
 
@@ -116,21 +117,23 @@ class HomeFragment : Fragment() {
             }
         }
 
-        socket.on("stop_parking_status") { args ->
+        socket.on("stop_parking_status") { _ ->
             requireActivity().runOnUiThread {
                 binding.tvEstadoActual.text = "Pago realizado"
                 binding.tvTiempo.text = "00h 00m"
                 binding.tvCosto.text = "$0.00"
                 binding.tvFechaInicio.text = "--/--/----"
+                binding.btnPagar.visibility = View.GONE
             }
         }
 
-        socket.on("exit_parking") { args ->
+        socket.on("exit_parking") { _ ->
             requireActivity().runOnUiThread {
                 binding.tvEstadoActual.text = "Vehículo ha salido"
                 binding.tvTiempo.text = "00h 00m"
                 binding.tvCosto.text = "$0.00"
                 binding.tvFechaInicio.text = "--/--/----"
+                binding.btnPagar.visibility = View.GONE
             }
         }
     }
@@ -142,6 +145,7 @@ class HomeFragment : Fragment() {
         val isParked = json.optBoolean("is_parked", false)
         val status = json.optString("status", "NONE")
 
+        // Fecha
         val entryTimeRaw = json.optString("entry_time", "")
         val fecha = if (entryTimeRaw.contains("T"))
             entryTimeRaw.substring(0, 10)
@@ -149,14 +153,17 @@ class HomeFragment : Fragment() {
 
         binding.tvFechaInicio.text = fecha
 
+        // Tiempo
         val totalMinutes = json.optDouble("elapsed_minutes", 0.0)
         val h = (totalMinutes / 60).toInt()
         val m = (totalMinutes % 60).toInt()
         binding.tvTiempo.text = if (isParked) "${h}h ${m}m" else "00h 00m"
 
+        // Costo
         val cost = json.optDouble("current_cost", 0.0)
         binding.tvCosto.text = "$${String.format("%.2f", cost)}"
 
+        // Estado
         binding.tvEstadoActual.text =
             when (status) {
                 "IN_PROGRESS" -> "Estacionado"
@@ -165,7 +172,53 @@ class HomeFragment : Fragment() {
                 "NONE" -> "No estacionado"
                 else -> "Desconocido"
             }
+
+        binding.btnPagar.visibility =
+            if (isParked && status == "IN_PROGRESS") View.VISIBLE else View.GONE
     }
+
+    // -------------------------------------------------------
+    //           LISTENER PARA EL BOTÓN DE PAGAR
+    // -------------------------------------------------------
+    private fun setupPagarListener() {
+        binding.btnPagar.setOnClickListener {
+            pagarEstacionamiento()
+        }
+    }
+
+    private fun pagarEstacionamiento() {
+        lifecycleScope.launch {
+            try {
+                // 1) Obtener estado del backend
+                val statusRes = ApiClient.retrofit.parkingStatus()
+
+                if (!statusRes.isSuccessful) return@launch
+
+                val statusBody = statusRes.body() ?: return@launch
+                val data = statusBody.data ?: return@launch
+
+                // 2) Extraer el session_id
+                val sessionId = data["session_id"] as? String ?: return@launch
+
+                // 3) Construir body
+                val body = hashMapOf<String, Any>(
+                    "session_id" to sessionId
+                )
+
+                // 4) Ejecutar pago
+                val res = ApiClient.retrofit.payParking(body)
+
+                if (res.isSuccessful && res.body()?.status == true) {
+                    binding.tvEstadoActual.text = "Pago realizado"
+                    binding.btnPagar.visibility = View.GONE
+                }
+
+            } catch (e: Exception) {
+                Log.e("HOME", "Error pagando: ${e.message}")
+            }
+        }
+    }
+
 
     // -------------------------------------------------------
     //                 CLICK LISTENERS
@@ -177,6 +230,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupCardClickListeners() {
+
         binding.cardEscanear.setOnClickListener {
             findNavController().navigate(R.id.action_homeFragment_to_scannerFragment)
         }
@@ -192,6 +246,7 @@ class HomeFragment : Fragment() {
         binding.cardConfiguracion.setOnClickListener {
             findNavController().navigate(R.id.action_homeFragment_to_userSettingsFragment)
         }
+
 
         binding.cardAdmin.setOnClickListener {
             findNavController().navigate(R.id.adminPanelFragment)

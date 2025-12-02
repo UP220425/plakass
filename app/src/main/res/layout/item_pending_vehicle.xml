@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="18dp"
+    android:orientation="vertical"
+    android:background="#1E1E1E"
+    android:layout_marginBottom="14dp"
+    android:elevation="6dp"
+    android:clipToPadding="false">
+
+    <TextView
+        android:id="@+id/txtPlate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="ABC123"
+        android:textColor="#FFFFFF"
+        android:textSize="26sp"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/txtPrice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="$35.00 MXN"
+        android:textColor="#00E676"
+        android:textSize="20sp"
+        android:layout_marginTop="6dp" />
+
+</LinearLayout>

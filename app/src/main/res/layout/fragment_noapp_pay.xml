@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="40dp"
+    android:background="#121212">
+
+    <!-- CARD PARA LA PLACA -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:background="#1F1F1F"
+        android:gravity="center"
+        android:padding="20dp"
+        android:layout_marginBottom="30dp"
+        android:elevation="6dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txtPlate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Placa: ABC123"
+            android:textColor="#FFFFFF"
+            android:textSize="36sp"
+            android:textStyle="bold"
+            android:gravity="center" />
+    </LinearLayout>
+
+    <!-- CARD PARA EL PRECIO -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:background="#1F1F1F"
+        android:gravity="center"
+        android:padding="20dp"
+        android:layout_marginBottom="60dp"
+        android:elevation="6dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txtPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Total: $25.00 MXN"
+            android:textColor="#00E676"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            android:gravity="center" />
+    </LinearLayout>
+
+    <!-- BOTÓN DE PAGO -->
+    <Button
+        android:id="@+id/btnPay"
+        android:layout_width="350dp"
+        android:layout_height="85dp"
+        android:text="PAGAR AHORA"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:background="#00C853"
+        android:textColor="#FFFFFF"
+        android:elevation="10dp"
+        android:layout_marginBottom="40dp" />
+
+    <!-- STATUS DEL PAGO -->
+    <TextView
+        android:id="@+id/txtStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="22sp"
+        android:textColor="#FFFFFF"
+        android:gravity="center"
+        android:padding="20dp" />
+
+</LinearLayout>

@@ -178,4 +178,92 @@
 
     </fragment>
 
+    <!-- ========================= -->
+    <!--   PANEL ADMINISTRATIVO    -->
+    <!-- ========================= -->
+
+    <!-- PANEL PRINCIPAL -->
+    <fragment
+        android:id="@+id/adminPanelFragment"
+        android:name="PlateRecognitionApp.plakass.ui.admin.AdminPanelFragment"
+        android:label="Panel de Administración"
+        tools:layout="@layout/fragment_admin_panel">
+
+        <action
+            android:id="@+id/action_adminPanelFragment_to_adminQRFragment"
+            app:destination="@id/adminQRFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+
+        <action
+            android:id="@+id/action_adminPanelFragment_to_noAppVehiclesFragment"
+            app:destination="@id/noAppVehiclesFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+
+    <!-- PANTALLA DEL QR -->
+    <fragment
+        android:id="@+id/adminQRFragment"
+        android:name="PlateRecognitionApp.plakass.ui.admin.AdminQRFragment"
+        android:label="QR Dinámico"
+        tools:layout="@layout/fragment_admin_qr">
+
+        <action
+            android:id="@+id/action_adminQRFragment_to_adminPanelFragment"
+            app:destination="@id/adminPanelFragment"
+            app:popUpTo="@id/adminPanelFragment"
+            app:popUpToInclusive="false" />
+    </fragment>
+
+
+    <!-- PANTALLA DE CARROS SIN APP -->
+    <fragment
+        android:id="@+id/noAppVehiclesFragment"
+        android:name="PlateRecognitionApp.plakass.ui.admin.NoAppVehiclesFragment"
+        android:label="Carros sin App"
+        tools:layout="@layout/fragment_noapp_vehicles">
+
+        <action
+            android:id="@+id/action_noAppVehiclesFragment_to_noAppPayFragment"
+            app:destination="@id/noAppPayFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+
+        <action
+            android:id="@+id/action_noAppVehiclesFragment_to_adminPanelFragment"
+            app:destination="@id/adminPanelFragment"
+            app:popUpTo="@id/adminPanelFragment"
+            app:popUpToInclusive="false" />
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/noAppPayFragment"
+        android:name="PlateRecognitionApp.plakass.ui.admin.NoAppPayFragment"
+        android:label="Pago sin App"
+        tools:layout="@layout/fragment_noapp_pay">
+
+        <argument
+            android:name="sessionId"
+            app:argType="string" />
+
+        <argument
+            android:name="plate"
+            app:argType="string" />
+
+        <argument
+            android:name="price"
+            app:argType="float" />
+
+    </fragment>
+
+
 </navigation>

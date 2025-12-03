@@ -11,10 +11,15 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import PlateRecognitionApp.plakass.R
 import PlateRecognitionApp.plakass.data.api.ApiClient
+import PlateRecognitionApp.plakass.data.local.entities.HistorySessionEntity
+import PlateRecognitionApp.plakass.data.local.repository.ParkingLocalRepository
 import PlateRecognitionApp.plakass.data.model.ParkingSession
 import PlateRecognitionApp.plakass.databinding.FragmentHistoryBinding
 import PlateRecognitionApp.plakass.ui.history.adapter.HistoryAdapter
 import PlateRecognitionApp.plakass.ui.history.model.ParkingHistory
+import PlateRecognitionApp.plakass.utils.NetworkUtils
+import PlateRecognitionApp.plakass.utils.NetworkMonitor
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class HistoryFragment : Fragment() {
@@ -23,8 +28,11 @@ class HistoryFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var historyAdapter: HistoryAdapter
 
+    private lateinit var localRepo: ParkingLocalRepository
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentHistoryBinding.inflate(inflater, container, false)
+        localRepo = ParkingLocalRepository(requireContext())
         return binding.root
     }
 
@@ -35,7 +43,23 @@ class HistoryFragment : Fragment() {
         setupClickListeners()
         setupFilterButtons()
 
-        loadHistory("all")
+        // ---------------------------------------------------------------
+        // 🔥 MONITOREAR INTERNET — actualizar historial cuando vuelva
+        // ---------------------------------------------------------------
+        lifecycleScope.launchWhenStarted {
+            NetworkMonitor.isConnected.collectLatest { connected ->
+                if (connected) loadHistory("all")
+            }
+        }
+
+        // 🔥 Si no hay internet → cargar offline
+        lifecycleScope.launch {
+            if (!NetworkUtils.isConnected(requireContext())) {
+                loadOfflineHistory()
+            } else {
+                loadHistory("all")
+            }
+        }
     }
 
     private fun setupRecyclerView() {
@@ -53,35 +77,85 @@ class HistoryFragment : Fragment() {
     }
 
     private fun setupFilterButtons() {
+
         binding.btnFilterAll.setOnClickListener {
             updateFilterSelection(binding.btnFilterAll)
-            loadHistory("all")
+
+            lifecycleScope.launch {
+                if (!NetworkUtils.isConnected(requireContext())) loadOfflineHistory()
+                else loadHistory("all")
+            }
         }
 
         binding.btnFilterMonth.setOnClickListener {
             updateFilterSelection(binding.btnFilterMonth)
-            loadHistory("month")
+
+            lifecycleScope.launch {
+                if (!NetworkUtils.isConnected(requireContext())) loadOfflineHistory()
+                else loadHistory("month")
+            }
         }
 
         binding.btnFilterWeek.setOnClickListener {
             updateFilterSelection(binding.btnFilterWeek)
-            loadHistory("week")
+
+            lifecycleScope.launch {
+                if (!NetworkUtils.isConnected(requireContext())) loadOfflineHistory()
+                else loadHistory("week")
+            }
         }
     }
 
     private fun updateFilterSelection(selectedButton: com.google.android.material.button.MaterialButton) {
-        listOf(binding.btnFilterAll, binding.btnFilterMonth, binding.btnFilterWeek).forEach { button ->
-            button.setBackgroundColor(requireContext().getColor(R.color.button_filter_unselected))
-            button.setTextColor(requireContext().getColor(R.color.primary_dark))
+        listOf(binding.btnFilterAll, binding.btnFilterMonth, binding.btnFilterWeek).forEach { btn ->
+            btn.setBackgroundColor(requireContext().getColor(R.color.button_filter_unselected))
+            btn.setTextColor(requireContext().getColor(R.color.primary_dark))
         }
 
         selectedButton.setBackgroundColor(requireContext().getColor(R.color.primary_dark))
         selectedButton.setTextColor(requireContext().getColor(android.R.color.white))
     }
 
-    // ---------------------------------------------------------
-    // 🚀  CARGA HISTORIAL DESDE EL BACKEND
-    // ---------------------------------------------------------
+    // ==========================================================
+    // 🔥 OFFLINE MODE — CARGAR HISTORIAL DESDE SQLITE
+    // ==========================================================
+    private suspend fun loadOfflineHistory() {
+        val list = localRepo.getHistory()
+
+        if (list.isEmpty()) {
+            showEmptyState()
+            return
+        }
+
+        val uiList = list.map { entity ->
+            ParkingHistory(
+                id = entity.id,
+                date = entity.entry_time.substring(0, 10),
+                plateNumber = entity.plate,
+                location = "Offline",
+                duration = formatDuration(entity.duration_minutes),
+                cost = "$${entity.price ?: 0.0}",
+                timeRange = entity.exit_time ?: "Sin datos",
+                status = entity.status
+            )
+        }
+
+        showHistoryList()
+        historyAdapter.submitList(uiList)
+        updateStatistics(uiList)
+    }
+
+    private fun formatDuration(minutes: Double?): String {
+        if (minutes == null) return "N/A"
+        val total = minutes.toInt()
+        val h = total / 60
+        val m = total % 60
+        return "${h}h ${m}m"
+    }
+
+    // ==========================================================
+    // 🔵 ONLINE MODE — CARGAR DEL BACKEND Y GUARDAR LOCALMENTE
+    // ==========================================================
     private fun loadHistory(filter: String) {
         lifecycleScope.launch {
             try {
@@ -96,15 +170,18 @@ class HistoryFragment : Fragment() {
                     return@launch
                 }
 
-                val data = response.body()!!.data
-                val listUI = data.sessions.map { it.toUI() }
+                val sessions = response.body()!!.data.sessions
+                val uiList = sessions.map { it.toUI() }
 
-                if (listUI.isEmpty()) {
+                // Guardar en SQLite 🔥
+                saveHistoryLocal(sessions)
+
+                if (uiList.isEmpty()) {
                     showEmptyState()
                 } else {
                     showHistoryList()
-                    historyAdapter.submitList(listUI)
-                    updateStatistics(listUI)
+                    historyAdapter.submitList(uiList)
+                    updateStatistics(uiList)
                 }
 
             } catch (e: Exception) {
@@ -113,39 +190,54 @@ class HistoryFragment : Fragment() {
         }
     }
 
-    // ---------------------------------------------------------
-    // 🚀 MAPEAR JSON DEL BACKEND → UI MODEL
-    // ---------------------------------------------------------
+    // ==========================================================
+    // 🔥 GUARDAR HISTORIAL DEL BACKEND EN SQLITE
+    // ==========================================================
+    private suspend fun saveHistoryLocal(list: List<ParkingSession>) {
+        localRepo.clearHistory()
+
+        val entities = list.map { s ->
+            HistorySessionEntity(
+                id = s.id,
+                plate = s.plate ?: "",
+                entry_time = s.entry_time ?: "",
+                exit_time = s.exit_time,
+                duration_minutes = s.duration_minutes,
+                duration_hours = s.duration_hours,
+                price = s.price,
+                status = when (s.status) {
+                    "EXITED" -> "Completado"
+                    "PAID" -> "Pagado"
+                    "IN_PROGRESS" -> "Activo"
+                    else -> "Desconocido"
+                }
+            )
+        }
+
+        localRepo.saveHistorySessions(entities)
+    }
+
+    // ==========================================================
+    // MAPEO BACKEND → UI
+    // ==========================================================
     private fun ParkingSession.toUI(): ParkingHistory {
 
-        // Formatear fecha
         val dateFormatted = entry_time?.substring(0, 10) ?: "Sin fecha"
 
-        // Horario
-        val start = entry_time?.let {
-            try { it.substring(11, 16) } catch (e: Exception) { "?" }
-        } ?: "?"
-
-        val end = exit_time?.let {
-            try { it.substring(11, 16) } catch (e: Exception) { "?" }
-        } ?: "?"
-
+        val start = entry_time?.substring(11, 16) ?: "?"
+        val end = exit_time?.substring(11, 16) ?: "?"
         val timeRange = if (exit_time != null) "$start - $end" else "En progreso"
 
-        // Duración
         val durationStr = duration_minutes?.let {
             val h = (it / 60).toInt()
             val m = (it % 60).toInt()
             "${h}h ${m}m"
         } ?: "N/A"
 
-        // Costo
         val costStr = price?.let { "$$it" } ?: "$0"
 
-        // Vehículo
-        val location = vehicle_info?.brand ?: "Sin datos"
+        val vehicleBrand = vehicle_info?.brand ?: "Sin datos"
 
-        // Estado
         val statusStr = when (status) {
             "EXITED" -> "Completado"
             "PAID" -> "Pagado"
@@ -157,7 +249,7 @@ class HistoryFragment : Fragment() {
             id = id,
             date = dateFormatted,
             plateNumber = plate ?: "N/A",
-            location = location,
+            location = vehicleBrand,
             duration = durationStr,
             cost = costStr,
             timeRange = timeRange,
@@ -165,12 +257,14 @@ class HistoryFragment : Fragment() {
         )
     }
 
-
+    // ==========================================================
+    // UI HELPERS
+    // ==========================================================
     private fun updateStatistics(historyList: List<ParkingHistory>) {
         binding.tvTotalVisits.text = historyList.size.toString()
 
-        val totalTime = historyList.sumOf { it.duration.toMinutes() }
-        binding.tvTotalTime.text = "${totalTime / 60}h ${totalTime % 60}m"
+        val totalMinutes = historyList.sumOf { it.duration.toMinutes() }
+        binding.tvTotalTime.text = "${totalMinutes / 60}h ${totalMinutes % 60}m"
 
         val totalCost = historyList.sumOf { it.cost.toMoney() }
         binding.tvTotalSpent.text = "$${"%.2f".format(totalCost)}"
@@ -192,7 +286,9 @@ class HistoryFragment : Fragment() {
     }
 }
 
-// ---------------------------------------------------------
+// ==========================================================
+// HELPERS
+// ==========================================================
 fun String.toMinutes(): Int {
     return when {
         contains("h") && contains("m") -> {

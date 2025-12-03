@@ -12,7 +12,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="24dp">
+        android:padding="24dp"
+        android:layout_marginTop="24dp">
 
         <!-- HEADER MEJORADO -->
         <LinearLayout
@@ -61,11 +62,10 @@
                     android:id="@+id/ivProfile"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:src="@drawable/ic_person"
-                    android:scaleType="centerInside"
-                    android:padding="12dp"
+                    android:scaleType="centerCrop"
                     android:background="@drawable/circle_bg"
-                    android:tint="#1A237E" />
+                    android:src="@drawable/ic_person" />
+
 
             </com.google.android.material.card.MaterialCardView>
 
@@ -149,7 +149,6 @@
 
                     </LinearLayout>
 
-
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -202,7 +201,6 @@
             android:textColor="#1A237E"
             android:layout_marginBottom="16dp" />
 
-
         <!-- GRID DE OPCIONES MEJORADO -->
         <GridLayout
             android:layout_width="match_parent"
@@ -213,7 +211,6 @@
             android:columnOrderPreserved="false"
             android:rowOrderPreserved="false">
 
-            <!-- CARD 1 - ESCANEAR -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardEscanear"
                 android:layout_width="0dp"
@@ -246,7 +243,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:src="@drawable/ic_camera"
-                            android:tint="#1A237E"
+                            app:tint="#1A237E"
                             android:scaleType="centerInside"
                             android:padding="16dp" />
 
@@ -259,15 +256,19 @@
                         android:textStyle="bold"
                         android:textSize="16sp"
                         android:textColor="#1A237E"
-                        android:layout_marginTop="12dp" />
+                        android:layout_marginTop="8dp"
+                        android:ellipsize="end"
+                        android:maxLines="2" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Ingresar al estacionamiento"
-                        android:textSize="10sp"
+                        android:text="Entrada al estacionamiento"
+                        android:textSize="12sp"
                         android:textColor="#666666"
-                        android:layout_marginTop="4dp" />
+                        android:layout_marginTop="0dp"
+                        android:ellipsize="end"
+                        android:maxLines="2" />
 
                 </LinearLayout>
 
@@ -306,7 +307,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:src="@drawable/ic_history"
-                            android:tint="#1A237E"
+                            app:tint="#1A237E"
                             android:scaleType="centerInside"
                             android:padding="16dp" />
 
@@ -319,15 +320,19 @@
                         android:textStyle="bold"
                         android:textSize="16sp"
                         android:textColor="#1A237E"
-                        android:layout_marginTop="12dp" />
+                        android:layout_marginTop="8dp"
+                        android:ellipsize="end"
+                        android:maxLines="2" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Ver estacionamientos anteriores"
+                        android:text="Revisar Historial"
                         android:textSize="12sp"
                         android:textColor="#666666"
-                        android:layout_marginTop="4dp" />
+                        android:layout_marginTop="0dp"
+                        android:ellipsize="end"
+                        android:maxLines="2" />
 
                 </LinearLayout>
 
@@ -366,7 +371,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:src="@drawable/ic_car"
-                            android:tint="#1A237E"
+                            app:tint="#1A237E"
                             android:scaleType="centerInside"
                             android:padding="16dp" />
 
@@ -379,7 +384,7 @@
                         android:textStyle="bold"
                         android:textSize="16sp"
                         android:textColor="#1A237E"
-                        android:layout_marginTop="12dp" />
+                        android:layout_marginTop="8dp" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -387,7 +392,7 @@
                         android:text="Gestionar mis autos"
                         android:textSize="12sp"
                         android:textColor="#666666"
-                        android:layout_marginTop="4dp" />
+                        android:layout_marginTop="0dp" />
 
                 </LinearLayout>
 
@@ -426,7 +431,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:src="@drawable/ic_settings"
-                            android:tint="#1A237E"
+                            app:tint="#1A237E"
                             android:scaleType="centerInside"
                             android:padding="16dp" />
 
@@ -439,7 +444,7 @@
                         android:textStyle="bold"
                         android:textSize="16sp"
                         android:textColor="#1A237E"
-                        android:layout_marginTop="12dp" />
+                        android:layout_marginTop="8dp" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -447,7 +452,7 @@
                         android:text="Ajustes de la app"
                         android:textSize="12sp"
                         android:textColor="#666666"
-                        android:layout_marginTop="4dp" />
+                        android:layout_marginTop="0dp" />
 
                 </LinearLayout>
 
@@ -486,7 +491,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:src="@drawable/ic_admin"
-                            android:tint="#1A237E"
+                            app:tint="#1A237E"
                             android:scaleType="centerInside"
                             android:padding="16dp" />
                     </com.google.android.material.card.MaterialCardView>
@@ -510,8 +515,6 @@
                 </LinearLayout>
 
             </com.google.android.material.card.MaterialCardView>
-
-
 
         </GridLayout>
 

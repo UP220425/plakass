@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:gravity="center"
-    android:padding="24dp"
-    android:background="@drawable/dialog_bg"
-    android:alpha="0"
-    android:animateLayoutChanges="true">
+    android:background="@android:color/transparent"
+    android:padding="32dp">
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/lottieStatus"
-        android:layout_width="220dp"
-        android:layout_height="220dp"
+        android:layout_width="180dp"
+        android:layout_height="180dp"
+        android:background="@android:color/transparent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:lottie_autoPlay="false"
         app:lottie_loop="false" />
 
@@ -21,9 +22,15 @@
         android:id="@+id/tvStatusMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Cargando..."
-        android:textColor="#1A237E"
-        android:textSize="18sp"
+        android:textSize="16sp"
+        android:textColor="@color/white"
         android:textStyle="bold"
-        android:layout_marginTop="12dp" />
-</LinearLayout>
+        android:background="@drawable/rounded_background"
+        android:padding="12dp"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@id/lottieStatus"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -13,6 +13,17 @@
         <item name="android:windowLightStatusBar">false</item>
     </style>
 
+    <style name="TransparentDialog" parent="Theme.MaterialComponents.Dialog.Alert">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:backgroundDimAmount">0.5</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowCloseOnTouchOutside">false</item>
+    </style>
+
     <style name="Theme.Plakass" parent="Base.Theme.Plakass" />
 
     <!-- Dialog Animation -->

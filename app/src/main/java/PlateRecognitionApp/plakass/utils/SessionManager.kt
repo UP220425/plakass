@@ -1,7 +1,6 @@
 package PlateRecognitionApp.plakass.utils
 
 import android.content.Context
-import android.content.SharedPreferences
 
 object SessionManager {
 
@@ -19,6 +18,11 @@ object SessionManager {
         token = value
         val sp = context.getSharedPreferences(PREF, Context.MODE_PRIVATE)
         sp.edit().putString(KEY_TOKEN, value).apply()
+    }
+
+    fun getToken(context: Context): String? {
+        val sp = context.getSharedPreferences(PREF, Context.MODE_PRIVATE)
+        return sp.getString(KEY_TOKEN, null)
     }
 
     fun logout(context: Context) {
